@@ -18,30 +18,20 @@ _Coroutine grammar {
   int status;
   void expectAlpha() {
     status = isalpha(ch) ? KEEP_SENDING : INVALID;
-    suspend();
   }
   void expectDigit() {
     status = isdigit(ch) ? KEEP_SENDING : INVALID;
-    suspend();
-  }
-  void expectDigitAndEnd() {
-    status = isdigit(ch) ? VALID : INVALID;
-    suspend();
-  }
-  void skip() {
-    suspend();
   }
   void main() {
-    // TODO: implement this
-    expectAlpha();
-    expectDigit();
-    expectAlpha();
+    expectAlpha(); suspend();
+    expectDigit(); suspend();
+    expectAlpha(); suspend();
     while (ch == ' ') {
-      skip();
+      suspend();
     }
-    expectDigit();
-    expectAlpha();
-    expectDigitAndEnd();
+    expectDigit(); suspend();
+    expectAlpha(); suspend();
+    expectDigit(); status = VALID;
   }
  public:
   int next(char c) {
@@ -61,21 +51,20 @@ void uMain::main() {
       continue;
     }
     grammar g;
-    string::iterator it;
     int status;
-    for (it = line.begin(); it != line.end(); ) {
+    string::iterator it = line.begin();
+    do {
       status = g.next(*it++);
-      if (status != KEEP_SENDING) {
-        break;
+      if (it == line.end() && status == KEEP_SENDING) {
+        status = INVALID;
       }
-    }
+    } while (status == KEEP_SENDING);
     string match(line.begin(), it);
     cout << " : \"" << match << "\"";
     switch (status) {
       case VALID:
         cout << " yes";
         break;
-      case KEEP_SENDING:
       case INVALID:
         cout << " no";
         break;
