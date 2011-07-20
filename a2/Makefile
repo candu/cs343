@@ -6,6 +6,9 @@ CXXFLAGS=-g -Wall -Wno-unused-label -MMD -DTYPE="${TYPE}"
 UXX_EXTRA_FLAGS=-I${UXX_ROOT}/u++-5.7.0/inc -L${UXX_ROOT}/u++-5.7.0/lib
 MAKEFILE_NAME=${firstword ${MAKEFILE_LIST}}
 
+q1%.o : q1%.cc
+	${CXX} ${CXXFLAGS} ${UXX_EXTRA_FLAGS} -c $< -o $@
+
 OBJECTS1=q1cardgame.o
 EXEC1=cardgame
 
@@ -17,7 +20,7 @@ EXEC3=quicksort
 
 OBJECTS=${OBJECTS1} ${OBJECTS2} ${OBJECTS3}
 DEPENDS=${OBJECTS:.o=.d}
-EXECS=${EXEC1} ${EXEC2} ${EXEC3}
+EXECS=${EXEC1} ${EXEC3}
 
 all: ${EXECS}
 
