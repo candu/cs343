@@ -20,7 +20,7 @@ EXEC3=quicksort
 
 OBJECTS=${OBJECTS1} ${OBJECTS2} ${OBJECTS3}
 DEPENDS=${OBJECTS:.o=.d}
-EXECS=${EXEC1} ${EXEC3}
+EXECS=${EXEC1} ${EXEC3} prngtest
 
 all: ${EXECS}
 
@@ -52,9 +52,12 @@ endif
 ImplType :
 	echo "IMPLTYPE=${TYPE}" > ImplType
 
+prngtest:
+	g++ -o prngtest PRNGTest.cc
+
 ${OBJECTS} : ${MAKEFILE_NAME}
 
 -include ${DEPENDS}
 
 clean:
-	rm -f *.d *.o ${EXECS} interference ImplType
+	rm -f *.d *.o ${EXECS} interference ImplType prngtest
