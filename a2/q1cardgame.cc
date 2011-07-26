@@ -83,6 +83,14 @@ _Coroutine Printer {
     }
     prtHeader();
   }
+  ~Printer() {
+    for (uint32_t i = 0; i < playersInitial_; i++) {
+      if (buffer_[i] != NULL) {
+        delete buffer_[i];
+      }
+    }
+    delete[] buffer_;
+  }
   /**
    * We're departing from the assignment here because it seems stupid to
    * duplicate this logic in the Player and Printer, and not much better to
