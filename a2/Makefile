@@ -2,7 +2,8 @@ TYPE:=int
 
 UXX_ROOT=/home/fearlesstost/u++
 CXX=${UXX_ROOT}/bin/u++
-CXXFLAGS=-g -Wall -Wno-unused-label -MMD -DTYPE="${TYPE}"
+CXXFLAGS=-g -Wall -Werror -Wfatal-errors -Wno-unused-label -MMD -DTYPE="${TYPE}"
+CXXFLAGS_EXEC2=-g -Wall -MMD -DTYPE="${TYPE}"
 UXX_EXTRA_FLAGS=-I${UXX_ROOT}/u++-5.7.0/inc -L${UXX_ROOT}/u++-5.7.0/lib
 MAKEFILE_NAME=${firstword ${MAKEFILE_LIST}}
 
@@ -12,23 +13,27 @@ q1%.o : q1%.cc
 OBJECTS1=q1cardgame.o
 EXEC1=cardgame
 
-OBJECTS2=q2interference.o
-EXEC2=interference
+EXEC2A=uniproc
+EXEC2B=multiproc
+EXEC2=${EXEC2A} ${EXEC2B}
 
 OBJECTS3=q3driver.o
 EXEC3=quicksort
 
-OBJECTS=${OBJECTS1} ${OBJECTS2} ${OBJECTS3}
+OBJECTS=${OBJECTS1} ${OBJECTS3}
 DEPENDS=${OBJECTS:.o=.d}
-EXECS=${EXEC1} ${EXEC3} prngtest
+EXECS=${EXEC1} ${EXEC2} ${EXEC3} prngtest
 
 all: ${EXECS}
 
 ${EXEC1} : ${OBJECTS1}
 	${CXX} ${CXXFLAGS} ${UXX_EXTRA_FLAGS} $^ -o $@
 
-${EXEC2} : ${OBJECTS2}
-	${CXX} ${CXXFLAGS} ${UXX_EXTRA_FLAGS} $^ -o $@
+${EXEC2A} :
+	${CXX} -o $@ q2unimulti.cc
+
+${EXEC2B} :
+	${CXX} -multi -o $@ q2unimulti.cc
 
 -include ImplType
 
@@ -60,4 +65,4 @@ ${OBJECTS} : ${MAKEFILE_NAME}
 -include ${DEPENDS}
 
 clean:
-	rm -f *.d *.o ${EXECS} interference ImplType prngtest
+	rm -f *.d *.o ${EXECS} ImplType prngtest
