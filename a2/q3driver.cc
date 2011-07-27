@@ -1,6 +1,8 @@
 #include <uC++.h>
+#include <boost/scoped_ptr.hpp>
 #include <iostream>
 
+using namespace boost;
 using namespace std;
 
 template<typename T>
@@ -10,11 +12,13 @@ _Task QuickSort {
   QuickSort(T array[], int low, int high)
     : array_(array),
       low_(low),
-      high_(high) { }
+      high_(high),
+      subTask_() { }
  private:
   T* array_;
   int low_;
   int high_;
+  scoped_ptr<QuickSort> subTask_;
   void swap(int a, int b) {
     T temp = array_[a];
     array_[a] = array_[b];
@@ -22,7 +26,6 @@ _Task QuickSort {
   }
   void main() {
     while (true) {
-      cout << "sorting T[" << low_ << ", " << high_ << ")" << endl;
       // check for base case
       int left = low_;
       int right = high_ - 1;
@@ -44,10 +47,7 @@ _Task QuickSort {
       left = low_;
 
       // invoke new task to sort left partition
-      // TODO: does this run concurrently?
-      {
-        QuickSort q(array_, left, mid);
-      }
+      subTask_.reset(new QuickSort(array_, left, mid));
     
       // sort right partition
       low_ = mid;
