@@ -60,48 +60,40 @@ BoundedBuffer<T>::~BoundedBuffer() {
 template <typename T>
 void BoundedBuffer<T>::insert(T elem) {
   lock_.acquire();
-  cout << "insert() enters" << endl;
-  if (full()) {
-    cout << "insert() waits" << endl;
+  while (true) {
+    if (!full()) {
+      break;
+    }
     slotFree_.wait(lock_);
   }
-  cout << "insert() executes" << endl;
-  cout << "size == " << size_ << endl;
   assert(0 <= size_ && size_ < capacity_);
 
-  cout << "insert(" << elem << ")" << endl;
   buffer_[(head_ + size_) % capacity_] = elem;
   size_++;
-  cout << *this << endl;
 
   itemAvailable_.signal();
-  cout << "insert() signals" << endl;
   lock_.release();
 }
 
 template <typename T>
 T BoundedBuffer<T>::remove() {
   lock_.acquire();
-  cout << "remove() enters" << endl;
-  if (empty()) {
-    cout << "remove() waits" << endl;
+  while (true) {
+    if (!empty()) {
+      break;
+    }
     itemAvailable_.wait(lock_);
   }
-  cout << "remove() executes" << endl;
-  cout << "size == " << size_ << endl;
   assert(0 < size_ && size_ <= capacity_);
 
   T ret = buffer_[head_];
-  cout << "remove(" << ret << ")" << endl;
   head_++;
   if (head_ == capacity_) {
     head_ = 0;
   }
   size_--;
-  cout << *this << endl;
 
   slotFree_.signal();
-  cout << "remove() signals" << endl;
   lock_.release();
 
   return ret;

@@ -30,7 +30,6 @@ _Task Consumer {
       yield(rand() % delay_);
       int32_t value = buffer_.remove();
       if (value == sentinel_) {
-        cout << "received sentinel" << endl;
         break;
       }
       sum_ += value;
