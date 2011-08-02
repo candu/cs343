@@ -46,7 +46,6 @@ template <typename T>
 BoundedBuffer<T>::BoundedBuffer(const uint32_t capacity)
   : buffer_(new T[capacity]),
     head_(0),
-    tail_(0),
     size_(0),
     capacity_(capacity),
     lock_(),
@@ -61,30 +60,35 @@ BoundedBuffer<T>::~BoundedBuffer() {
 template <typename T>
 void BoundedBuffer<T>::insert(T elem) {
   lock_.acquire();
+  cout << "insert() enters" << endl;
   if (full()) {
+    cout << "insert() waits" << endl;
     slotFree_.wait(lock_);
   }
+  cout << "insert() executes" << endl;
+  cout << "size == " << size_ << endl;
   assert(0 <= size_ && size_ < capacity_);
 
   cout << "insert(" << elem << ")" << endl;
-  tail_++;
-  if (tail_ == capacity_) {
-    tail_ = 0;
-  }
-  buffer_[tail_] = elem;
+  buffer_[(head_ + size_) % capacity_] = elem;
   size_++;
-  //cout << *this;
+  cout << *this << endl;
 
   itemAvailable_.signal();
+  cout << "insert() signals" << endl;
   lock_.release();
 }
 
 template <typename T>
 T BoundedBuffer<T>::remove() {
   lock_.acquire();
+  cout << "remove() enters" << endl;
   if (empty()) {
+    cout << "remove() waits" << endl;
     itemAvailable_.wait(lock_);
   }
+  cout << "remove() executes" << endl;
+  cout << "size == " << size_ << endl;
   assert(0 < size_ && size_ <= capacity_);
 
   T ret = buffer_[head_];
@@ -94,9 +98,10 @@ T BoundedBuffer<T>::remove() {
     head_ = 0;
   }
   size_--;
-  //cout << *this;
+  cout << *this << endl;
 
   slotFree_.signal();
+  cout << "remove() signals" << endl;
   lock_.release();
 
   return ret;
