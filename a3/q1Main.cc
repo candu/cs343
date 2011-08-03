@@ -1,9 +1,21 @@
 #include <uC++.h>
 #include <iostream>
 
-#include "BoundedBuffer.cc"
 #include "Producer.cc"
 #include "Consumer.cc"
+
+#ifdef BUSY
+  #include "BusyWaitBoundedBuffer.cc"
+  typedef BusyWaitBoundedBuffer<int32_t> Buffer;
+#else
+  #ifdef NOBUSY
+    #include "NoBusyWaitBoundedBuffer.cc"
+    typedef NoBusyWaitBoundedBuffer<int32_t> Buffer;
+  #else
+    #include "BoundedBuffer.cc"
+    typedef BoundedBuffer<int32_t> Buffer;
+  #endif
+#endif
 
 using namespace std;
 
@@ -32,19 +44,18 @@ void uMain::main() {
     delays = numCons + numProd;
   }
   
-  typedef BusyWaitBoundedBuffer<int32_t> Buffer;
   Buffer buffer(bufferSize);
   int32_t sentinel = -1;
   int32_t partialSums[numCons];
   Consumer<Buffer>* consumers[numCons];
   for (uint32_t i = 0; i < numCons; i++) {
     consumers[i] = new Consumer<Buffer>(
-        buffer, delays, sentinel, partialSums[i]);
+        i, buffer, delays, sentinel, partialSums[i]);
   }
   Producer<Buffer>* producers[numProd];
   for (uint32_t i = 0; i < numProd; i++) {
     producers[i] = new Producer<Buffer>(
-        buffer, numItemsProduced, delays);
+        i, buffer, numItemsProduced, delays);
   }
   for (uint32_t i = 0; i < numProd; i++) {
     delete producers[i];

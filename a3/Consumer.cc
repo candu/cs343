@@ -3,7 +3,8 @@
 
 #include <uC++.h>
 #include <cstdlib>
-#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "BoundedBuffer.cc"
 
@@ -12,19 +13,27 @@ using namespace std;
 template <typename BufType>
 _Task Consumer {
  public:
-  Consumer(BufType& buffer,
+  Consumer(uint32_t id,
+           BufType& buffer,
            const int32_t delay,
            const int32_t sentinel,
            int32_t& sum)
     : buffer_(buffer),
       delay_(delay),
       sentinel_(sentinel),
-      sum_(sum) { }
+      sum_(sum),
+      name_() {
+    ostringstream ostr;
+    ostr << "consumer-" << id;
+    name_ = ostr.str();
+    setName(name_.c_str());
+  }
  private:
   BufType& buffer_;
   const int32_t delay_;
   const int32_t sentinel_;
   int32_t& sum_;
+  string name_;
   void main() {
     sum_ = 0;
     while (true) {

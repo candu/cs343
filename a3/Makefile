@@ -1,12 +1,23 @@
 UXX_ROOT=/home/fearlesstost/u++
 CXX=${UXX_ROOT}/bin/u++
-CXXFLAGS=-g -Wall -Werror -Wfatal-errors -Wno-unused-label -MMD -DTYPE="${TYPE}" -I${UXX_ROOT}/u++-5.7.0/inc -L${UXX_ROOT}/u++-5.7.0/lib
+BUSY=BUSY
+NOBUSY=NOBUSY
+TYPEFLAGS=
+ifeq (${TYPE},${BUSY})
+  TYPEFLAGS=-DBUSY
+else
+ifeq (${TYPE},${NOBUSY})
+  TYPEFLAGS=-DNOBUSY
+endif
+endif
+   
+CXXFLAGS=-g -Wall -Werror -Wfatal-errors -Wno-unused-label -MMD ${TYPEFLAGS} -I${UXX_ROOT}/u++-5.7.0/inc -L${UXX_ROOT}/u++-5.7.0/lib
 MAKEFILE_NAME=${firstword ${MAKEFILE_LIST}}
 
 %.o : %.cc
 	${CXX} ${CXXFLAGS} -c $< -o $@
 
-OBJECTS1=BoundedBuffer.o Producer.o Consumer.o q1Main.o
+OBJECTS1=NoBusyWaitBoundedBuffer.o BusyWaitBoundedBuffer.o BoundedBuffer.o Producer.o Consumer.o q1Main.o
 EXEC1=buffer
 
 OBJECTS2=q2Main.o
