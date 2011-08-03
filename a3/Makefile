@@ -3,13 +3,10 @@ CXX=${UXX_ROOT}/bin/u++
 CXXFLAGS=-g -Wall -Werror -Wfatal-errors -Wno-unused-label -MMD -DTYPE="${TYPE}" -I${UXX_ROOT}/u++-5.7.0/inc -L${UXX_ROOT}/u++-5.7.0/lib
 MAKEFILE_NAME=${firstword ${MAKEFILE_LIST}}
 
-q1%.o : q1%.cc
+%.o : %.cc
 	${CXX} ${CXXFLAGS} -c $< -o $@
 
-q2%.o : q2%.cc
-	${CXX} ${CXXFLAGS} -c $< -o $@
-
-OBJECTS1=q1BoundedBuffer.o q1Producer.o q1Consumer.o q1Main.o
+OBJECTS1=BoundedBuffer.o Producer.o Consumer.o q1Main.o
 EXEC1=buffer
 
 OBJECTS2=q2Main.o

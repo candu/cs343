@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "q1BoundedBuffer.cc"
+#include "BoundedBuffer.cc"
 
 using namespace std;
 

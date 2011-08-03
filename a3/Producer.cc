@@ -4,7 +4,7 @@
 #include <uC++.h>
 #include <cstdlib>
 
-#include "q1BoundedBuffer.cc"
+#include "BoundedBuffer.cc"
 
 _Task Producer {
  public:

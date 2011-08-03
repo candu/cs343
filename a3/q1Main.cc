@@ -1,9 +1,9 @@
 #include <uC++.h>
 #include <iostream>
 
-#include "q1BoundedBuffer.cc"
-#include "q1Producer.cc"
-#include "q1Consumer.cc"
+#include "BoundedBuffer.cc"
+#include "Producer.cc"
+#include "Consumer.cc"
 
 using namespace std;
 
