@@ -31,17 +31,20 @@ void uMain::main() {
   if (!delaysSet) {
     delays = numCons + numProd;
   }
-
-  BoundedBuffer<int32_t> buffer(bufferSize);
+  
+  typedef BusyWaitBoundedBuffer<int32_t> Buffer;
+  Buffer buffer(bufferSize);
   int32_t sentinel = -1;
   int32_t partialSums[numCons];
-  Consumer* consumers[numCons];
+  Consumer<Buffer>* consumers[numCons];
   for (uint32_t i = 0; i < numCons; i++) {
-    consumers[i] = new Consumer(buffer, delays, sentinel, partialSums[i]);
+    consumers[i] = new Consumer<Buffer>(
+        buffer, delays, sentinel, partialSums[i]);
   }
-  Producer* producers[numProd];
+  Producer<Buffer>* producers[numProd];
   for (uint32_t i = 0; i < numProd; i++) {
-    producers[i] = new Producer(buffer, numItemsProduced, delays);
+    producers[i] = new Producer<Buffer>(
+        buffer, numItemsProduced, delays);
   }
   for (uint32_t i = 0; i < numProd; i++) {
     delete producers[i];

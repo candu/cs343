@@ -6,16 +6,17 @@
 
 #include "BoundedBuffer.cc"
 
+template <typename BufType>
 _Task Producer {
  public:
-  Producer(BoundedBuffer<int32_t>& buffer,
+  Producer(BufType& buffer,
            const int32_t produce,
            const int32_t delay)
     : buffer_(buffer),
       produce_(produce),
       delay_(delay) { }
  private:
-  BoundedBuffer<int32_t>& buffer_;
+  BufType& buffer_;
   const int32_t produce_;
   const int32_t delay_;
   void main() {

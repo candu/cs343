@@ -9,9 +9,10 @@
 
 using namespace std;
 
+template <typename BufType>
 _Task Consumer {
  public:
-  Consumer(BoundedBuffer<int32_t>& buffer,
+  Consumer(BufType& buffer,
            const int32_t delay,
            const int32_t sentinel,
            int32_t& sum)
@@ -20,7 +21,7 @@ _Task Consumer {
       sentinel_(sentinel),
       sum_(sum) { }
  private:
-  BoundedBuffer<int32_t>& buffer_;
+  BufType& buffer_;
   const int32_t delay_;
   const int32_t sentinel_;
   int32_t& sum_;
