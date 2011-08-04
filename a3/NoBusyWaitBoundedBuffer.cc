@@ -14,6 +14,7 @@ class NoBusyWaitBoundedBuffer {
   void insert(T elem);
   T remove();
  private:
+  void enter();
   BoundedBuffer<T> buffer_;
   uOwnerLock lock_;
   bool signal_;
@@ -26,7 +27,7 @@ template <typename T>
 NoBusyWaitBoundedBuffer<T>::NoBusyWaitBoundedBuffer(const uint32_t capacity)
   : buffer_(capacity),
     lock_(),
-    signal_(false),
+    signal_(),
     barging_(),
     itemAvailable_(),
     slotFree_() { }
@@ -35,26 +36,33 @@ template <typename T>
 NoBusyWaitBoundedBuffer<T>::~NoBusyWaitBoundedBuffer() { }
 
 template <typename T>
-void NoBusyWaitBoundedBuffer<T>::insert(T elem) {
+void NoBusyWaitBoundedBuffer<T>::enter() {
   lock_.acquire();
   if (signal_) {
-    cout << uThisTask().getName() << ": insert() waits on barging" << endl;
     barging_.wait(lock_);
-    cout << uThisTask().getName() << ": insert() signalled from barging" << endl;
+    signal_ = false;
   }
+}
+
+template <typename T>
+void NoBusyWaitBoundedBuffer<T>::insert(T elem) {
+  enter();
   if (buffer_.full()) {
-    cout << uThisTask().getName() << ": insert() waits on slotFree" << endl;
+    if (!barging_.empty()) {
+      signal_ = true;
+      barging_.signal();
+    }
     slotFree_.wait(lock_);
-    cout << uThisTask().getName() << ": insert() signalled from slotFree" << endl;
     signal_ = false;
   }
 
   buffer_.insert(elem);
-
+  
   if (!itemAvailable_.empty()) {
     signal_ = true;
     itemAvailable_.signal();
   } else if (!barging_.empty()) {
+    signal_ = true;
     barging_.signal();
   }
   lock_.release();
@@ -62,16 +70,13 @@ void NoBusyWaitBoundedBuffer<T>::insert(T elem) {
 
 template <typename T>
 T NoBusyWaitBoundedBuffer<T>::remove() {
-  lock_.acquire();
-  if (signal_) {
-    cout << uThisTask().getName() << ": remove() waits on barging" << endl;
-    barging_.wait(lock_);
-    cout << uThisTask().getName() << ": remove() signalled from barging" << endl;
-  }
+  enter();
   if (buffer_.empty()) {
-    cout << uThisTask().getName() << ": remove() waits on itemAvailable" << endl;
+    if (!barging_.empty()) {
+      signal_ = true;
+      barging_.signal();
+    }
     itemAvailable_.wait(lock_);
-    cout << uThisTask().getName() << ": remove() signalled from itemAvailable" << endl;
     signal_ = false;
   }
 
@@ -81,6 +86,7 @@ T NoBusyWaitBoundedBuffer<T>::remove() {
     signal_ = true;
     slotFree_.signal();
   } else if (!barging_.empty()) {
+    signal_ = true;
     barging_.signal();
   }
   lock_.release();
