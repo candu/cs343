@@ -32,7 +32,7 @@ _Task Producer {
   const int32_t delay_;
   string name_;
   void main() {
-    for (int32_t i = 1; i <= produce_; i++) {
+    for (int64_t i = 1; i <= produce_; i++) {
       yield(rand() % delay_);
       buffer_.insert(i);
     }

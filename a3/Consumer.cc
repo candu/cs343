@@ -16,8 +16,8 @@ _Task Consumer {
   Consumer(uint32_t id,
            BufType& buffer,
            const int32_t delay,
-           const int32_t sentinel,
-           int32_t& sum)
+           const int64_t sentinel,
+           int64_t& sum)
     : buffer_(buffer),
       delay_(delay),
       sentinel_(sentinel),
@@ -31,14 +31,14 @@ _Task Consumer {
  private:
   BufType& buffer_;
   const int32_t delay_;
-  const int32_t sentinel_;
-  int32_t& sum_;
+  const int64_t sentinel_;
+  int64_t& sum_;
   string name_;
   void main() {
     sum_ = 0;
     while (true) {
       yield(rand() % delay_);
-      int32_t value = buffer_.remove();
+      int64_t value = buffer_.remove();
       if (value == sentinel_) {
         break;
       }

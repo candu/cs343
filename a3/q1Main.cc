@@ -6,14 +6,14 @@
 
 #ifdef BUSY
   #include "BusyWaitBoundedBuffer.cc"
-  typedef BusyWaitBoundedBuffer<int32_t> Buffer;
+  typedef BusyWaitBoundedBuffer<int64_t> Buffer;
 #else
   #ifdef NOBUSY
     #include "NoBusyWaitBoundedBuffer.cc"
-    typedef NoBusyWaitBoundedBuffer<int32_t> Buffer;
+    typedef NoBusyWaitBoundedBuffer<int64_t> Buffer;
   #else
     #include "BoundedBuffer.cc"
-    typedef BoundedBuffer<int32_t> Buffer;
+    typedef BoundedBuffer<int64_t> Buffer;
   #endif
 #endif
 
@@ -24,7 +24,7 @@ void uMain::main() {
   uint32_t numProd = 3;
   uint32_t numItemsProduced = 10;
   uint32_t bufferSize = 10;
-  uint32_t delays;
+  uint32_t delays = 0;
   bool delaysSet = false;
 
   switch (argc) {
@@ -45,8 +45,8 @@ void uMain::main() {
   }
   
   Buffer buffer(bufferSize);
-  int32_t sentinel = -1;
-  int32_t partialSums[numCons];
+  int64_t sentinel = -1;
+  int64_t partialSums[numCons];
   Consumer<Buffer>* consumers[numCons];
   for (uint32_t i = 0; i < numCons; i++) {
     consumers[i] = new Consumer<Buffer>(
@@ -67,7 +67,7 @@ void uMain::main() {
     delete consumers[i];
   }
 
-  int32_t sum = 0;
+  int64_t sum = 0;
   for (uint32_t i = 0; i < numCons; i++) {
     sum += partialSums[i];
   }
