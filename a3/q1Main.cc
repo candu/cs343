@@ -43,6 +43,11 @@ void uMain::main() {
   if (!delaysSet) {
     delays = numCons + numProd;
   }
+
+#ifdef __U_MULTI__
+  // create additional processor (tostmostor is dual-core!)
+  uProcessor p __attribute__((unused));
+#endif // __U_MULTI__
   
   Buffer buffer(bufferSize);
   int64_t sentinel = -1;
