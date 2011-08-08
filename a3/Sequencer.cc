@@ -8,22 +8,19 @@ class Sequencer {
  public:
   Sequencer()
     : lastTicket_(0),
-      semaphore_() { }
+      synch_(1) { }
   uint32_t ticket() {
-    semaphore_.P();
+    synch_.P();
     uint32_t ticket = ++lastTicket_;
-    semaphore_.V();
+    synch_.V();
     return ticket;
   }
   uint32_t check() {
-    semaphore_.P();
-    uint32_t ticket = lastTicket_;
-    semaphore_.V();
-    return ticket;
+    return lastTicket_;
   }
  private:
   uint32_t lastTicket_;
-  uSemaphore semaphore_;
+  uSemaphore synch_;
 };
 
 #endif // SEQUENCER_CC

@@ -20,7 +20,7 @@ MAKEFILE_NAME=${firstword ${MAKEFILE_LIST}}
 OBJECTS1=NoBusyWaitBoundedBuffer.o BusyWaitBoundedBuffer.o BoundedBuffer.o Producer.o Consumer.o q1Main.o
 EXEC1=buffer
 
-OBJECTS2=Sequencer.o EventCounter.o q2Main.o
+OBJECTS2=Sequencer.o EventCounter.o EventCounterBoundedBuffer.o q2Main.o
 EXEC2=eventcounter
 
 OBJECTS=${OBJECTS1} ${OBJECTS2}
