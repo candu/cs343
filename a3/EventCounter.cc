@@ -22,14 +22,15 @@ class EventCounter {
         "), lastEvent_ == " << lastEvent_ << endl;
     if (lastEvent_ < ticket) {
       numWaiting_.V();
+      synch_.V();
       cout << uThisTask().getName() << ": must wait " <<
             (ticket - lastEvent_) << endl;
-      for (uint32_t i = lastEvent_; i < ticket; i++) {
-        wait_.P(synch_);
+      for (uint32_t i = ticket; i > lastEvent_; i--) {
+        wait_.P();
         cout << uThisTask().getName() << ": wait_.P(), must wait " <<
-            (ticket - i - 1) << endl;
-        synch_.P();
+            (i - lastEvent_ - 1) << endl;
       }
+      synch_.P();
       numWaiting_.P();
     }
     synch_.V();
@@ -44,8 +45,8 @@ class EventCounter {
           numWaiting << ")" << endl;
       wait_.V(numWaiting);
     }
-    synch_.V();
     service_.V();
+    synch_.V();
   }
   uint32_t check() {
     return lastEvent_;
