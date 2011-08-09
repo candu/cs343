@@ -3,8 +3,6 @@
 
 #include <uC++.h>
 
-#include <iostream>
-
 #include "BoundedBuffer.cc"
 #include "Sequencer.cc"
 #include "EventCounter.cc"
@@ -71,7 +69,6 @@ void EventCounterBoundedBuffer<T>::insert(T elem) {
   slotFree_.acquire();
 
   lock_.acquire();
-  cout << uThisTask().getName() << ": insert(" << elem << ")" << endl;
   buffer_.insert(elem);
   lock_.release();
 
@@ -81,11 +78,9 @@ void EventCounterBoundedBuffer<T>::insert(T elem) {
 template <typename T>
 T EventCounterBoundedBuffer<T>::remove() {
   itemAvailable_.acquire();
-  cout << uThisTask().getName() << ": can remove()" << endl;
 
   lock_.acquire();
   T ret = buffer_.remove();
-  cout << uThisTask().getName() << ": " << ret << " = remove()" << endl;
   lock_.release();
 
   slotFree_.release();

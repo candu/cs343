@@ -40,7 +40,6 @@ _Task Consumer {
     while (true) {
       yield(rand() % delay_);
       int64_t value = buffer_.remove();
-      cout << uThisTask().getName() << " got value " << value << endl;
       if (value == sentinel_) {
         break;
       }
